@@ -4,8 +4,11 @@
 matrix_mx_puppet_instagram_enabled: true
 
 matrix_mx_puppet_instagram_container_image_self_build: false
+matrix_mx_puppet_instagram_container_image_self_build_repo: "https://github.com/Sorunome/mx-puppet-instagram.git"
 
-matrix_mx_puppet_instagram_docker_image: "docker.io/sorunome/mx-puppet-instagram:latest"
+matrix_mx_puppet_instagram_version: latest
+matrix_mx_puppet_instagram_docker_image: "{{ matrix_mx_puppet_instagram_docker_image_name_prefix }}sorunome/mx-puppet-instagram:{{ matrix_mx_puppet_instagram_version }}"
+matrix_mx_puppet_instagram_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_instagram_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_mx_puppet_instagram_docker_image_force_pull: "{{ matrix_mx_puppet_instagram_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_instagram_base_path: "{{ matrix_base_data_path }}/mx-puppet-instagram"
@@ -14,7 +17,7 @@ matrix_mx_puppet_instagram_data_path: "{{ matrix_mx_puppet_instagram_base_path }
 matrix_mx_puppet_instagram_docker_src_files_path: "{{ matrix_mx_puppet_instagram_base_path }}/docker-src"
 
 matrix_mx_puppet_instagram_appservice_port: "8440"
-matrix_mx_puppet_instagram_homeserver_address: 'http://matrix-synapse:8008'
+matrix_mx_puppet_instagram_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mx_puppet_instagram_homeserver_domain: '{{ matrix_domain }}'
 matrix_mx_puppet_instagram_appservice_address: 'http://matrix-mx-puppet-instagram:{{ matrix_mx_puppet_instagram_appservice_port }}'
 
@@ -43,6 +46,19 @@ matrix_mx_puppet_instagram_homeserver_token: ''
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mx_puppet_instagram_login_shared_secret: ''
+
+matrix_mx_puppet_instagram_database_engine: sqlite
+
+matrix_mx_puppet_instagram_sqlite_database_path_local: "{{ matrix_mx_puppet_instagram_data_path }}/database.db"
+matrix_mx_puppet_instagram_sqlite_database_path_in_container: "/data/database.db"
+
+matrix_mx_puppet_instagram_database_username: matrix_mx_puppet_instagram
+matrix_mx_puppet_instagram_database_password: ~
+matrix_mx_puppet_instagram_database_hostname: 'matrix-postgres'
+matrix_mx_puppet_instagram_database_port: 5432
+matrix_mx_puppet_instagram_database_name: matrix_mx_puppet_instagram
+
+matrix_mx_puppet_instagram_database_connection_string: 'postgresql://{{ matrix_mx_puppet_instagram_database_username }}:{{ matrix_mx_puppet_instagram_database_password }}@{{ matrix_mx_puppet_instagram_database_hostname }}:{{ matrix_mx_puppet_instagram_database_port }}/{{ matrix_mx_puppet_instagram_database_name }}?sslmode=disable'
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -82,5 +98,6 @@ matrix_mx_puppet_instagram_registration_yaml: |
   rate_limited: false
   sender_localpart: _instagrampuppet_bot
   url: {{ matrix_mx_puppet_instagram_appservice_address }}
+  de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mx_puppet_instagram_registration: "{{ matrix_mx_puppet_instagram_registration_yaml|from_yaml }}"

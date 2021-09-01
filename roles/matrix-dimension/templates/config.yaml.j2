@@ -13,7 +13,7 @@ homeserver:
 
   # The URL that Dimension, go-neb, and other services provisioned by Dimension should
   # use to access the homeserver with.
-  clientServerUrl: "http://matrix-synapse:8008"
+  clientServerUrl: "{{ matrix_homeserver_container_url }}"
 
   # The URL that Dimension should use when trying to communicate with federated APIs on
   # the homeserver. If not supplied or left empty Dimension will try to resolve the address
@@ -44,7 +44,11 @@ widgetBlacklist:
 
 # Where the database for Dimension is
 database:
-  file: "dimension.db"
+{% if matrix_dimension_database_engine == 'sqlite' %}
+  file: {{ matrix_dimension_sqlite_database_path_in_container|to_json }}
+{% elif matrix_dimension_database_engine == 'postgres' %}
+  uri: {{ matrix_dimension_database_connection_string|to_json }}
+{% endif %}
 
 # Display settings that apply to self-hosted go-neb instances
 goneb:

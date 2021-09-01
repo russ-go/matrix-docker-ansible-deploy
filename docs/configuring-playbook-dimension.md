@@ -3,6 +3,9 @@
 **[Dimension](https://dimension.t2bot.io) can only be installed after Matrix services are installed and running.**
 If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
 
+**Note**: enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
+
+
 ## Prerequisites
 
 This playbook now supports running [Dimension](https://dimension.t2bot.io) in both a federated and an [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environment. This is handled automatically based on the value of `matrix_synapse_federation_enabled`.
@@ -21,7 +24,7 @@ matrix_dimension_enabled: true
 
 ## Define admin users
 
-These users can modify the integrations this Dimension supports. Admin interface is accessible by opening Dimension in Element and clicking the settings icon.
+These users can modify the integrations this Dimension supports. Admin interface is accessible at `https://dimension.<your-domain>/riot-app/admin` after logging in to element.
 Add this to your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
 
 ```yaml
@@ -48,7 +51,7 @@ To get an access token for the Dimension user, you can follow one of two options
 3. Copy the highlighted text to your configuration.
 4. Close the private browsing session. **Do not log out**. Logging out will invalidate the token, making it not work.
 
-*With CURL* 
+*With CURL*
 
 ```
 curl -X POST --header 'Content-Type: application/json' -d '{

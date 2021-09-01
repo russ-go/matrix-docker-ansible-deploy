@@ -69,7 +69,7 @@ It is, however, **a little fragile**, as future updates performed by this playbo
 
 If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
 
-This is the easiest way to set up well-known serving -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.). However, if you need to use the base domain for other things (such as hosting some website, etc.), going with Option 1 or Option 2 might be more suitable.
+This is the easiest way to set up well-known serving -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.). However, if you need to use the base domain for other things (such as hosting some website, etc.), going with Option 1 or Option 3 might be more suitable.
 
 See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
 
@@ -146,6 +146,13 @@ backend matrix-backend
 	# Rewrite redirects as ProxyPassReverse does
 	acl response-is-redirect res.hdr(Location) -m found
 	rsprep ^Location:\ (http|https)://matrix.example.com\/(.*) Location:\ \1://matrix.example.com/.well-known/matrix/\2 if response-is-redirect
+```
+
+**For Netlify**, it would be something like this:
+
+```
+# In the _redirects file in the website's root
+/.well-known/matrix/* https://matrix.DOMAIN/.well-known/matrix/:splat 200!
 ```
 
 Make sure to:

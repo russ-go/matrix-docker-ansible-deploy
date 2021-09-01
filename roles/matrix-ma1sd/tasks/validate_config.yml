@@ -28,6 +28,7 @@
     - 'matrix_ma1sd_ldap_auth_filter'
     - 'matrix_ma1sd_ldap_directory_filter'
     - 'matrix_ma1sd_template_config'
+    - 'matrix_ma1sd_architecture'
 
 - name: Ensure ma1sd configuration does not contain any dot-notation keys
   fail:
@@ -54,6 +55,7 @@
   when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
   with_items:
     - {'old': 'matrix_ma1sd_container_expose_port', 'new': '<superseded by matrix_ma1sd_container_http_host_bind_port>'}
+    - {'old': 'matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template', 'new': 'matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template'}
 
 - name: (Deprecation) Catch and report mxisd variables
   fail:

@@ -13,8 +13,8 @@ Before installing Jitsi, make sure you've created the `jitsi.DOMAIN` DNS record.
 
 You may also need to open the following ports to your server:
 
-- `10000/udp` - RTP media over UDP
 - `4443/tcp` - RTP media fallback over TCP
+- `10000/udp` - RTP media over UDP. Depending on your firewall/NAT setup, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`matrix_jitsi_jvb_stun_servers`](../roles/matrix-jitsi/defaults/main.yml)).
 
 
 ## Installation
@@ -26,7 +26,6 @@ matrix_jitsi_enabled: true
 
 # Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
 # or define your own strong passwords manually.
-matrix_jitsi_jicofo_component_secret: ""
 matrix_jitsi_jicofo_auth_password: ""
 matrix_jitsi_jvb_auth_password: ""
 matrix_jitsi_jibri_recorder_password: ""
@@ -91,44 +90,33 @@ matrix_jitsi_jvb_container_extra_arguments:
 
 ## (Optional) Fine tune Jitsi
 
-You may want to suspend unused video layers until they are requested again, to save up resources on both server and clients.
+Sample **additional** `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration to save up resources (explained below):
+
+```yaml
+matrix_jitsi_web_custom_config_extension: |
+  config.enableLayerSuspension = true;
+
+  config.disableAudioLevels = true;
+
+  // Limit the number of video feeds forwarded to each client
+  config.channelLastN = 4;
+
+matrix_jitsi_web_config_resolution_width_ideal_and_max: 480
+matrix_jitsi_web_config_resolution_height_ideal_and_max: 240
+```
+
+You may want to **suspend unused video layers** until they are requested again, to save up resources on both server and clients.
 Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/)
 For this add this line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
 
-```yaml
-matrix_jitsi_web_config_enableLayerSuspension: true
-```
+You may wish to **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved.
 
-You may wish to disable audio levels to avoid excessive refresh of the client-side page and decrease the CPU consumption involved.
-For this add this line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
-
-```yaml
-matrix_jitsi_web_config_disableAudioLevels: true
-```
-
-You may want to limit the number of video feeds forwarded to each client, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes.
+You may want to **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes.
 This feature is found by default in other webconference applications such as Office 365 Teams (limit is set to 4).
-Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf)
-For this add this line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
+Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
 
-```yaml
-matrix_jitsi_web_config_channelLastN: 4
-```
+You may want to **limit the maximum video resolution**, to save up resources on both server and clients.
 
-To enable the variables that allow you to manage the video configuration you must add the following line to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
-
-```yaml
-matrix_jitsi_web_config_constraints_enabled: true
-```
-
-You may want to limit the maximum video resolution, to save up resources on both server and clients.
-For example, to set resolution to 480.
-For this add this two lines to your `inventory/host_vars/matrix.DOMAIN/vars.yml` configuration:
-
-```yaml
-matrix_jitsi_web_config_constraints_video_height_ideal: 480
-matrix_jitsi_web_config_constraints_video_height_max: 480
-```
 
 ## Apply changes
 
@@ -140,7 +128,7 @@ Until this gets integrated into the playbook, we need to register new users / me
 Please SSH into your matrix host machine and execute the following command targeting the `matrix-jitsi-prosody` container:
 
 ```bash
-docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> matrix-jitsi-web <PASSWORD>
+docker exec matrix-jitsi-prosody prosodyctl --config /config/prosody.cfg.lua register <USERNAME> meet.jitsi <PASSWORD>
 ```
 
 Run this command for each user you would like to create, replacing `<USERNAME>` and `<PASSWORD>` accordingly. After you've finished, please exit the host.

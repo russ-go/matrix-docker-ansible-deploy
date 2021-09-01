@@ -4,8 +4,11 @@
 matrix_mx_puppet_skype_enabled: true
 
 matrix_mx_puppet_skype_container_image_self_build: false
+matrix_mx_puppet_skype_container_image_self_build_repo: "https://github.com/Sorunome/mx-puppet-skype.git"
 
-matrix_mx_puppet_skype_docker_image: "sorunome/mx-puppet-skype:latest"
+matrix_mx_puppet_skype_version: latest
+matrix_mx_puppet_skype_docker_image: "{{ matrix_mx_puppet_skype_docker_image_name_prefix }}sorunome/mx-puppet-skype:{{ matrix_mx_puppet_skype_version }}"
+matrix_mx_puppet_skype_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_skype_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_mx_puppet_skype_docker_image_force_pull: "{{ matrix_mx_puppet_skype_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_skype_base_path: "{{ matrix_base_data_path }}/mx-puppet-skype"
@@ -15,7 +18,7 @@ matrix_mx_puppet_skype_docker_src_files_path: "{{ matrix_mx_puppet_skype_base_pa
 
 matrix_mx_puppet_skype_appservice_port: "8438"
 
-matrix_mx_puppet_skype_homeserver_address: 'http://matrix-synapse:8008'
+matrix_mx_puppet_skype_homeserver_address: "{{ matrix_homeserver_container_url }}"
 matrix_mx_puppet_skype_appservice_address: 'http://matrix-mx-puppet-skype:{{ matrix_mx_puppet_skype_appservice_port }}'
 
 # "@user:server.com" to allow specific user
@@ -50,6 +53,20 @@ matrix_mx_puppet_skype_homeserver_token: ''
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
 matrix_mx_puppet_skype_login_shared_secret: ''
+
+# Database configuration, role default is `sqlite` but playbook default is `postgres`
+matrix_mx_puppet_skype_database_engine: sqlite
+
+matrix_mx_puppet_skype_sqlite_database_path_local: "{{ matrix_mx_puppet_skype_data_path }}/database.db"
+matrix_mx_puppet_skype_sqlite_database_path_in_container: "/data/database.db"
+
+matrix_mx_puppet_skype_database_username: matrix_mx_puppet_skype
+matrix_mx_puppet_skype_database_password: ~
+matrix_mx_puppet_skype_database_hostname: 'matrix-postgres'
+matrix_mx_puppet_skype_database_port: 5432
+matrix_mx_puppet_skype_database_name: matrix_mx_puppet_skype
+
+matrix_mx_puppet_skype_database_connection_string: 'postgresql://{{ matrix_mx_puppet_skype_database_username }}:{{ matrix_mx_puppet_skype_database_password }}@{{ matrix_mx_puppet_skype_database_hostname }}:{{ matrix_mx_puppet_skype_database_port }}/{{ matrix_mx_puppet_skype_database_name }}?sslmode=disable'
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -89,5 +106,6 @@ matrix_mx_puppet_skype_registration_yaml: |
   rate_limited: false
   sender_localpart: _skypepuppet_bot
   url: {{ matrix_mx_puppet_skype_appservice_address }}
+  de.sorunome.msc2409.push_ephemeral: true
 
 matrix_mx_puppet_skype_registration: "{{ matrix_mx_puppet_skype_registration_yaml|from_yaml }}"

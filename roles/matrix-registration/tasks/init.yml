@@ -1,5 +1,12 @@
+# See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1070
+# and https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/1ab507349c752042d26def3e95884f6df8886b74#commitcomment-51108407
+- name: Fail if trying to self-build on Ansible < 2.8
+  fail:
+    msg: "To self-build the Element image, you should use Ansible 2.8 or higher. See docs/ansible.md"
+  when: "ansible_version.major == 2 and ansible_version.minor < 8 and matrix_registration_container_image_self_build and matrix_registration_enabled"
+
 - set_fact:
-    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-registration'] }}"
+    matrix_systemd_services_list: "{{ matrix_systemd_services_list + ['matrix-registration.service'] }}"
   when: matrix_registration_enabled|bool
 
 - block:
@@ -30,15 +37,12 @@
         {% endif %}
 
           {#
-            Workaround matrix-registration serving static files at /static
-            (see https://github.com/ZerataX/matrix-registration/issues/29)
-
-            Also fixing the form, which goes to /register.
+            Workaround matrix-registration serving the background image at /static
+            (see https://github.com/ZerataX/matrix-registration/issues/47)
           #}
           sub_filter_once off;
-          sub_filter_types text/html text/css;
+          sub_filter_types text/css;
           sub_filter "/static/" "{{ matrix_registration_public_endpoint }}/static/";
-          sub_filter "/register" "{{ matrix_registration_public_endpoint }}/register";
         }
 
   - name: Register matrix-registration proxying configuration with matrix-nginx-proxy

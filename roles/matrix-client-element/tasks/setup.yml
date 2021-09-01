@@ -26,21 +26,24 @@
 
 - name: Ensure Element repository is present on self-build
   git:
-    repo: https://github.com/vector-im/riot-web.git
+    repo: "{{ matrix_client_element_container_image_self_build_repo }}"
     dest: "{{ matrix_client_element_docker_src_files_path }}"
     version: "{{ matrix_client_element_docker_image.split(':')[1] }}"
     force: "yes"
-  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build"
+  register: matrix_client_element_git_pull_results
+  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build|bool"
 
 - name: Ensure Element Docker image is built
   docker_image:
     name: "{{ matrix_client_element_docker_image }}"
     source: build
+    force_source: "{{ matrix_client_element_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_element_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_client_element_docker_src_files_path }}"
       pull: yes
-  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build"
+  when: "matrix_client_element_enabled|bool and matrix_client_element_container_image_self_build|bool"
 
 - name: Ensure Element configuration installed
   copy:
@@ -60,7 +63,7 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
-    - {src: "{{ role_path }}/templates/welcome.html.j2", name: "welcome.html"}
+    - {src: "{{ matrix_client_element_page_template_welcome_path }}", name: "welcome.html"}
     - {src: "{{ matrix_client_element_embedded_pages_home_path }}", name: "home.html"}
   when: "matrix_client_element_enabled|bool and item.src is not none"
 
