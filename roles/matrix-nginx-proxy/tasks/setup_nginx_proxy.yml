@@ -12,15 +12,17 @@
 #
 - name: Ensure Matrix nginx-proxy paths exist
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - "{{ matrix_nginx_proxy_base_path }}"
-    - "{{ matrix_nginx_proxy_data_path }}"
-    - "{{ matrix_nginx_proxy_confd_path }}"
+    - {path: "{{ matrix_nginx_proxy_base_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_data_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_confd_path }}", when: true}
+    - {path: "{{ matrix_nginx_proxy_synapse_cache_path }}", when: "{{ matrix_nginx_proxy_synapse_cache_enabled and not matrix_nginx_proxy_enabled }}"}
+  when: item.when|bool
 
 - name: Ensure Matrix nginx-proxy configured (main config override)
   template:
@@ -37,6 +39,15 @@
     group: "{{ matrix_user_groupname }}"
     mode: 0400
   when: "matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool and matrix_nginx_proxy_proxy_synapse_metrics|bool"
+
+- name: Generate sample prometheus.yml for external scraping
+  template:
+    src: "{{ role_path }}/templates/prometheus/external_prometheus.yml.example.j2"
+    dest: "{{ matrix_base_data_path }}/external_prometheus.yml.example"
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_synapse_metrics|bool
 
 - name: Ensure Matrix nginx-proxy configured (generic)
   template:
@@ -58,6 +69,19 @@
     state: absent
   when: "not matrix_nginx_proxy_proxy_synapse_enabled|bool"
 
+- name: Ensure Matrix nginx-proxy configuration for matrix-dendrite exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-dendrite.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-dendrite.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_dendrite_enabled|bool
+
+- name: Ensure Matrix nginx-proxy configuration for matrix-dendrite deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-dendrite.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_dendrite_enabled|bool"
+
 - name: Ensure Matrix nginx-proxy configuration for Element domain exists
   template:
     src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-element.conf.j2"
@@ -78,6 +102,20 @@
     dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
     mode: 0644
   when: matrix_nginx_proxy_proxy_hydrogen_enabled|bool
+
+- name: Ensure Matrix nginx-proxy configuration for Cinny domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-client-cinny.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-cinny.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_cinny_enabled|bool
+
+- name: Ensure Matrix nginx-proxy configuration for buscarron domain exists
+  template:
+    src: "{{ role_path }}/templates/nginx/conf.d/matrix-bot-buscarron.conf.j2"
+    dest: "{{ matrix_nginx_proxy_confd_path }}/matrix-bot-buscarron.conf"
+    mode: 0644
+  when: matrix_nginx_proxy_proxy_buscarron_enabled|bool
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain exists
   template:
@@ -155,6 +193,10 @@
     force_source: "{{ matrix_nginx_proxy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_nginx_proxy_docker_image_force_pull }}"
   when: matrix_nginx_proxy_enabled|bool
+  register: result
+  retries: "{{ matrix_container_retries_count }}"
+  delay: "{{ matrix_container_retries_delay }}"
+  until: result is not failed
 
 - name: Ensure matrix-nginx-proxy.service installed
   template:
@@ -166,7 +208,7 @@
 
 - name: Ensure systemd reloaded after matrix-nginx-proxy.service installation
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "matrix_nginx_proxy_enabled and matrix_nginx_proxy_systemd_service_result.changed"
 
 
@@ -184,7 +226,8 @@
   service:
     name: matrix-nginx-proxy
     state: stopped
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
   register: stopping_result
   when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
 
@@ -196,7 +239,7 @@
 
 - name: Ensure systemd reloaded after matrix-nginx-proxy.service removal
   service:
-    daemon_reload: yes
+    daemon_reload: true
   when: "not matrix_nginx_proxy_enabled|bool and matrix_nginx_proxy_service_stat.stat.exists"
 
 - name: Ensure Matrix nginx-proxy configuration for matrix domain deleted
@@ -216,6 +259,18 @@
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-hydrogen.conf"
     state: absent
   when: "not matrix_nginx_proxy_proxy_hydrogen_enabled|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for Cinny domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-client-cinny.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_cinny_enabled|bool"
+
+- name: Ensure Matrix nginx-proxy configuration for buscarron domain deleted
+  file:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-bot-buscarron.conf"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_buscarron_enabled|bool"
 
 - name: Ensure Matrix nginx-proxy configuration for dimension domain deleted
   file:
@@ -270,3 +325,9 @@
     path: "{{ matrix_nginx_proxy_data_path }}/matrix-synapse-metrics-htpasswd"
     state: absent
   when: "not matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled|bool or not matrix_nginx_proxy_proxy_synapse_metrics|bool"
+
+- name: Ensure sample prometheus.yml for external scraping is deleted
+  file:
+    path: "{{ matrix_base_data_path }}/external_prometheus.yml.example"
+    state: absent
+  when: "not matrix_nginx_proxy_proxy_synapse_metrics|bool"
