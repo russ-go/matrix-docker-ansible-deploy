@@ -1,6 +1,6 @@
 ---
 # Synapse is a Matrix homeserver
-# See: https://github.com/matrix-org/synapse
+# Project source code URL: https://github.com/matrix-org/synapse
 
 matrix_synapse_enabled: true
 
@@ -9,7 +9,7 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/matrix-org/s
 
 matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_container_global_registry_prefix }}"
-matrix_synapse_version: v1.60.0
+matrix_synapse_version: v1.67.0
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
 
@@ -61,7 +61,18 @@ matrix_synapse_container_metrics_api_host_bind_port: ''
 matrix_synapse_container_manhole_api_host_bind_port: ''
 
 # A list of extra arguments to pass to the container
+# Also see `matrix_synapse_container_arguments`
 matrix_synapse_container_extra_arguments: []
+
+# matrix_synapse_container_runtime_injected_arguments is a list of extra arguments to pass to the container.
+# This list is built during runtime. You're not meant to override this variable.
+# If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
+matrix_synapse_container_runtime_injected_arguments: []
+
+# matrix_synapse_container_arguments holds the final list of extra arguments to pass to the container.
+# You're not meant to override this variable.
+# If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
+matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_runtime_injected_arguments }}"
 
 # List of systemd services that matrix-synapse.service depends on
 matrix_synapse_systemd_required_services_list: ['docker.service']
@@ -85,6 +96,14 @@ matrix_synapse_allow_guest_access: false
 matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
 
 matrix_synapse_max_upload_size_mb: 50
+
+# Controls whether local media should be removed under certain conditions, typically for the purpose of saving space.
+# should be empty to disable
+matrix_synapse_media_retention_local_media_lifetime:
+# Controls whether remote media cache (media that is downloaded from other homeservers)
+# should be removed under certain conditions, typically for the purpose of saving space.
+# should be empty to disable
+matrix_synapse_media_retention_remote_media_lifetime:
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
@@ -133,6 +152,19 @@ matrix_synapse_rc_joins:
   remote:
     per_second: 0.01
     burst_count: 3
+
+
+matrix_synapse_rc_invites:
+  per_room:
+    per_second: 0.5
+    burst_count: 5
+  per_user:
+    per_second: 0.004
+    burst_count: 3
+  per_issuer:
+    per_second: 0.5
+    burst_count: 5
+
 
 matrix_synapse_rc_federation:
   window_size: 1000
@@ -215,9 +247,6 @@ matrix_synapse_recaptcha_private_key: ''
 # Disabling this option will not delete any tokens previously generated.
 matrix_synapse_registration_requires_token: false
 
-# Allows non-server-admin users to create groups on this server
-matrix_synapse_enable_group_creation: false
-
 # A list of 3PID types which users must supply when registering (possible values: email, msisdn).
 matrix_synapse_registrations_require_3pid: []
 
@@ -227,10 +256,6 @@ matrix_synapse_registrations_require_3pid: []
 #  - medium: msisdn
 #    pattern: '\+44'
 matrix_synapse_allowed_local_3pids: []
-
-# The server to use for email threepid validation. When empty, Synapse does it by itself.
-# Otherwise, this should be pointed to an identity server.
-matrix_synapse_account_threepid_delegates_email: ''
 
 # The server to use for phone number threepid validation. When empty, validation cannot happen, as Synapse doesn't support it.
 # To make it work, this should be pointed to an identity server.
@@ -306,7 +331,18 @@ matrix_synapse_additional_loggers: []
 # A list of appservice config files (in-container filesystem paths).
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
 # You may wish to use this together with `matrix_synapse_container_additional_volumes` or `matrix_synapse_container_extra_arguments`.
+# Also see `matrix_synapse_app_service_config_files_final`
 matrix_synapse_app_service_config_files: []
+
+# matrix_synapse_app_service_runtime_injected_config_files is a list of appservice config files.
+# This list is built during runtime. You're not meant to override this variable.
+# If you'd like to inject your own arguments, see `matrix_synapse_app_service_config_files`.
+matrix_synapse_app_service_runtime_injected_config_files: []
+
+# matrix_synapse_app_service_config_files_final holds the final list of config files to pass to the container.
+# You're not meant to override this variable.
+# If you'd like to inject your own arguments, see `matrix_synapse_app_service_config_files`.
+matrix_synapse_app_service_config_files_final: "{{ matrix_synapse_app_service_config_files + matrix_synapse_app_service_runtime_injected_config_files }}"
 
 # This is set dynamically during execution depending on whether
 # any password providers have been enabled or not.
@@ -328,6 +364,14 @@ matrix_url_preview_accept_language: ['en-US', 'en']
 # See https://github.com/matrix-org/synapse/blob/master/docs/metrics-howto.md
 matrix_synapse_metrics_enabled: false
 matrix_synapse_metrics_port: 9100
+
+# Controls whether Synapse metrics should be proxied (exposed) on:
+# - `matrix.DOMAIN/metrics/synapse/main-process` for the main process
+# - `matrix.DOMAIN/metrics/synapse/worker/{type}-{id}` for each worker process
+#
+# This will only work take effect if `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`.
+# See the `matrix-nginx-proxy` role for details about enabling `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
+matrix_synapse_metrics_proxying_enabled: false
 
 # Enable the Synapse manhole
 # See https://github.com/matrix-org/synapse/blob/master/docs/manhole.md
@@ -354,7 +398,6 @@ matrix_synapse_workers_presets:
     federation_sender_workers_count: 1
     media_repository_workers_count: 0
     user_dir_workers_count: 0
-    frontend_proxy_workers_count: 0
   one-of-each:
     generic_workers_count: 1
     pusher_workers_count: 1
@@ -366,7 +409,6 @@ matrix_synapse_workers_presets:
     # user_dir workers are deprecated since Synapse v1.59. This will be removed.
     # See: https://github.com/matrix-org/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types
     user_dir_workers_count: 0
-    frontend_proxy_workers_count: 1
 
 # Controls whether the matrix-synapse container exposes the various worker ports
 # (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
@@ -407,10 +449,6 @@ matrix_synapse_workers_media_repository_workers_metrics_range_start: 19551
 matrix_synapse_workers_user_dir_workers_count: 0
 matrix_synapse_workers_user_dir_workers_port_range_start: 18661
 matrix_synapse_workers_user_dir_workers_metrics_range_start: 19661
-
-matrix_synapse_workers_frontend_proxy_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['frontend_proxy_workers_count'] }}"
-matrix_synapse_workers_frontend_proxy_workers_port_range_start: 18771
-matrix_synapse_workers_frontend_proxy_workers_metrics_range_start: 19771
 
 # Default list of workers to spawn.
 #
@@ -508,11 +546,11 @@ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: ""
 matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled: true
 # We'd like to enable this, but it causes trouble for Element: https://github.com/vector-im/element-web/issues/19605
 matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled: false
-matrix_synapse_ext_password_provider_shared_secret_config: "{{ matrix_synapse_ext_password_provider_shared_secret_config_yaml|from_yaml }}"
+matrix_synapse_ext_password_provider_shared_secret_config: "{{ matrix_synapse_ext_password_provider_shared_secret_config_yaml | from_yaml }}"
 matrix_synapse_ext_password_provider_shared_secret_config_yaml: |
-  shared_secret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret|string|to_json }}
-  m_login_password_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled|to_json }}
-  com_devture_shared_secret_auth_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled|to_json }}
+  shared_secret: {{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret | string | to_json }}
+  m_login_password_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_m_login_password_support_enabled | to_json }}
+  com_devture_shared_secret_auth_support_enabled: {{ matrix_synapse_ext_password_provider_shared_secret_auth_com_devture_shared_secret_auth_support_enabled | to_json }}
 
 # Enable this to activate LDAP password provider
 matrix_synapse_ext_password_provider_ldap_enabled: false
@@ -573,11 +611,11 @@ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of: ["{{ matrix
 # Enabling this may have incompatiblity consequences with servers / clients.
 # Familiarize yourself with the caveats upstream: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_patch_power_levels: false
-matrix_synapse_ext_encryption_config: "{{ matrix_synapse_ext_encryption_config_yaml|from_yaml }}"
+matrix_synapse_ext_encryption_config: "{{ matrix_synapse_ext_encryption_config_yaml | from_yaml }}"
 matrix_synapse_ext_encryption_config_yaml: |
-  deny_encryption_for_users_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of|to_json }}
-  deny_encryption_for_rooms_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of|to_json }}
-  patch_power_levels: {{ matrix_synapse_ext_encryption_disabler_patch_power_levels|to_json }}
+  deny_encryption_for_users_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of | to_json }}
+  deny_encryption_for_rooms_of: {{ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of | to_json }}
+  patch_power_levels: {{ matrix_synapse_ext_encryption_disabler_patch_power_levels | to_json }}
 
 
 matrix_s3_media_store_enabled: false
@@ -665,8 +703,8 @@ matrix_synapse_configuration_extension_yaml: |
   #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
   #   room_name: "Server Notices"
 
-matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extension_yaml|from_yaml if matrix_synapse_configuration_extension_yaml|from_yaml is mapping else {} }}"
+matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extension_yaml | from_yaml if matrix_synapse_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
-matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml|from_yaml|combine(matrix_synapse_configuration_extension, recursive=True) }}"
+matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml | from_yaml | combine(matrix_synapse_configuration_extension, recursive=True) }}"

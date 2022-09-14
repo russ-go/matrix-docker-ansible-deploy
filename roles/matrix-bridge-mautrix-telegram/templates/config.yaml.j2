@@ -105,11 +105,11 @@ bridge:
     # synced when they send messages. The maximum is 10000, after which the Telegram server
     # will not send any more members.
     # Defaults to no local limit (-> limited to 10000 by server)
-    max_initial_member_sync: -1
+    max_initial_member_sync: 10
     # Whether or not to sync the member list in channels.
     # If no channel admins have logged into the bridge, the bridge won't be able to sync the member
     # list regardless of this setting.
-    sync_channel_members: true
+    sync_channel_members: false
     # Whether or not to skip deleted members when syncing members.
     skip_deleted_members: true
     # Whether or not to automatically synchronize contacts and chats of Matrix users logged into
@@ -176,27 +176,29 @@ bridge:
             height: 256
             background: "020202"  # only for gif
             fps: 30               # only for webm
-    # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
-    # and login_shared_secret to be configured in order to get a device for the bridge bot.
+    # End-to-bridge encryption support options.
     #
-    # Additionally, https://github.com/matrix-org/synapse/pull/5758 is required if using a normal
-    # application service.
+    # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: false
+        allow: {{ matrix_mautrix_telegram_bridge_encryption_allow|to_json }}
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
-        default: false
-        # Database for the encryption data. Currently only supports Postgres and an in-memory
-        # store that's persisted as a pickle.
-        # If set to `default`, will use the appservice postgres database
-        # or a pickle file if the appservice database is sqlite.
-        #
-        # Format examples:
-        #   Pickle:   pickle:///filename.pickle
-        #   Postgres: postgres://username:password@hostname/dbname
+        default: {{ matrix_mautrix_telegram_bridge_encryption_default|to_json }}
+        # Database for the encryption data. If set to `default`, will use the appservice database.
         database: default
-
+        # Options for automatic key sharing.
+        key_sharing:
+            # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+            # You must use a client that supports requesting keys from other users to use this feature.
+            allow: {{ matrix_mautrix_telegram_bridge_encryption_key_sharing_allow|to_json }}
+            # Require the requesting device to have a valid cross-signing signature?
+            # This doesn't require that the bridge has verified the device, only that the user has verified it.
+            # Not yet implemented.
+            require_cross_signing: false
+            # Require devices to be verified by the bridge?
+            # Verification by the bridge is not yet implemented.
+            require_verification: true
     # Whether or not to explicitly set the avatar and room name for private
     # chat portal rooms. This will be implicitly enabled if encryption.default is true.
     private_chat_portal_meta: false
@@ -204,7 +206,7 @@ bridge:
     # been sent to Telegram.
     delivery_receipts: false
     # Whether or not delivery errors should be reported as messages in the Matrix room.
-    delivery_error_reports: false
+    delivery_error_reports: true
     # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
     # This field will automatically be changed back to false after it,
     # except if the config file is not writable.
@@ -276,7 +278,7 @@ bridge:
         list: []
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!tg"
+    command_prefix: "{{ matrix_mautrix_telegram_command_prefix }}"
 
     # Permissions for using the bridge.
     # Permitted values:
@@ -289,8 +291,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions:
-      '{{ matrix_mautrix_telegram_homeserver_domain }}': full
+    permissions: {{ matrix_mautrix_telegram_bridge_permissions|to_json }}
 
     # Options related to the message relay Telegram bot.
     relaybot:
@@ -401,11 +402,11 @@ logging:
             formatter: precise
     loggers:
         mau:
-            level: DEBUG
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
         telethon:
-            level: DEBUG
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
         aiohttp:
-            level: INFO
+            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
     root:
-        level: DEBUG
+        level: {{ matrix_mautrix_telegram_logging_level|to_json }}
         handlers: [console]

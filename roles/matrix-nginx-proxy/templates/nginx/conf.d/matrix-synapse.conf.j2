@@ -1,9 +1,8 @@
 #jinja2: lstrip_blocks: "True"
 
-{% set generic_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'generic_worker')|list %}
-{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'media_repository')|list %}
-{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'user_dir')|list %}
-{% set frontend_proxy_workers = matrix_nginx_proxy_synapse_workers_list|selectattr('type', 'equalto', 'frontend_proxy')|list %}
+{% set generic_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'generic_worker') | list %}
+{% set media_repository_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'media_repository') | list %}
+{% set user_dir_workers = matrix_nginx_proxy_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
 {% if matrix_nginx_proxy_synapse_workers_enabled %}
 	{% if matrix_nginx_proxy_synapse_cache_enabled %}
     	proxy_cache_path  {{ matrix_nginx_proxy_synapse_cache_path }} levels=1:2 keys_zone={{ matrix_nginx_proxy_synapse_cache_keys_zone_name }}:{{ matrix_nginx_proxy_synapse_cache_keys_zone_size }} inactive={{ matrix_nginx_proxy_synapse_cache_inactive_time }} max_size={{ matrix_nginx_proxy_synapse_cache_max_size_mb }}m;
@@ -17,18 +16,6 @@
 		hash $http_x_forwarded_for;
 
 		{% for worker in generic_workers %}
-			{% if matrix_nginx_proxy_enabled %}
-				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
-			{% else %}
-				server "127.0.0.1:{{ worker.port }}";
-			{% endif %}
-		{% endfor %}
-	}
-	{% endif %}
-
-	{% if frontend_proxy_workers %}
-	upstream frontend_proxy_upstream {
-		{% for worker in frontend_proxy_workers %}
 			{% if matrix_nginx_proxy_enabled %}
 				server "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.port }}";
 			{% else %}
@@ -120,23 +107,6 @@ server {
 			}
 			{% endfor %}
 		{% endif %}
-
-		{% if frontend_proxy_workers %}
-			# https://github.com/matrix-org/synapse/blob/master/docs/workers.md#synapseappfrontend_proxy
-			{% for location in matrix_nginx_proxy_synapse_frontend_proxy_locations %}
-			location ~ {{ location }} {
-				proxy_pass http://frontend_proxy_upstream$request_uri;
-				proxy_set_header Host $host;
-			}
-			{% endfor %}
-			{% if matrix_nginx_proxy_synapse_presence_disabled %}
-			# FIXME: keep in sync with synapse workers documentation manually
-			location ~ ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/[^/]+/status {
-				proxy_pass http://frontend_proxy_upstream$request_uri;
-				proxy_set_header Host $host;
-			}
-			{% endif %}
-		{% endif %}
 		{# Workers redirects END #}
 	{% endif %}
 
@@ -144,45 +114,6 @@ server {
 	{% for configuration_block in matrix_nginx_proxy_proxy_synapse_additional_server_configuration_blocks %}
 		{{- configuration_block }}
 	{% endfor %}
-
-	{% if matrix_nginx_proxy_proxy_synapse_metrics %}
-	location /_synapse/metrics {
-		{% if matrix_nginx_proxy_enabled %}
-			{# Use the embedded DNS resolver in Docker containers to discover the service #}
-			resolver 127.0.0.11 valid=5s;
-			set $backend "{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_with_container }}";
-			proxy_pass http://$backend;
-		{% else %}
-			{# Generic configuration for use outside of our container setup #}
-			proxy_pass http://{{ matrix_nginx_proxy_proxy_synapse_metrics_addr_sans_container }};
-		{% endif %}
-
-		proxy_set_header Host $host;
-
-		{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
-			auth_basic "protected";
-			auth_basic_user_file {{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_path }};
-		{% endif %}
-	}
-	{% endif %}
-
-	{% if matrix_nginx_proxy_enabled and matrix_nginx_proxy_proxy_synapse_metrics %}
-		{% for worker in matrix_nginx_proxy_proxy_synapse_workers_enabled_list %}
-			{% if worker.metrics_port != 0 %}
-				location /_synapse-worker-{{ worker.type }}-{{ worker.instanceId }}/metrics {
-					resolver 127.0.0.11 valid=5s;
-					set $backend "matrix-synapse-worker-{{ worker.type }}-{{ worker.instanceId }}:{{ worker.metrics_port }}";
-					proxy_pass http://$backend/_synapse/metrics;
-					proxy_set_header Host $host;
-
-					{% if matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_enabled %}
-						auth_basic "protected";
-						auth_basic_user_file {{ matrix_nginx_proxy_proxy_synapse_metrics_basic_auth_path }};
-					{% endif %}
-				}
-			{% endif %}
-		{% endfor %}
-	{% endif %}
 
 	{# Everything else just goes to the API server ##}
 	location / {

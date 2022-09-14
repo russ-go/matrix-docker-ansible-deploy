@@ -352,13 +352,13 @@ worker_app: synapse.app.homeserver
 
 # thx https://oznetnerd.com/2017/04/18/jinja2-selectattr-filter/
 # reduce the main worker's offerings to core homeserver business
-{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'federation_sender')|list  %}
+{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'federation_sender') | list  %}
 send_federation: false
 {% endif %}
-{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'media_repository')|list  %}
+{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list  %}
 enable_media_repo: false
 {% endif %}
-{% if matrix_synapse_workers_enabled_list|selectattr('type', 'equalto', 'pusher')|list  %}
+{% if matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'pusher') | list  %}
 start_pushers: false
 {% endif %}
 
@@ -870,8 +870,8 @@ database:
   name: "psycopg2"
   txn_limit: {{ matrix_synapse_database_txn_limit }}
   args:
-    user: {{ matrix_synapse_database_user|string|to_json }}
-    password: {{ matrix_synapse_database_password|string|to_json }}
+    user: {{ matrix_synapse_database_user | string|to_json }}
+    password: {{ matrix_synapse_database_password | string|to_json }}
     database: "{{ matrix_synapse_database_database }}"
     host: "{{ matrix_synapse_database_host }}"
     port: {{ matrix_synapse_database_port }}
@@ -977,6 +977,8 @@ rc_joins: {{ matrix_synapse_rc_joins|to_json }}
 #    per_second: 0.003
 #    burst_count: 5
 #
+rc_invites: {{ matrix_synapse_rc_invites|to_json }}
+
 #rc_third_party_invite:
 #  per_second: 0.2
 #  burst_count: 10
@@ -1047,6 +1049,14 @@ media_store_path: "/matrix-media-store-parent/{{ matrix_synapse_media_store_dire
 # See https://matrix-org.github.io/synapse/latest/reverse_proxy.html.
 #
 max_upload_size: "{{ matrix_synapse_max_upload_size_mb }}M"
+
+media_retention:
+{% if matrix_synapse_media_retention_local_media_lifetime %}
+  local_media_lifetime: {{ matrix_synapse_media_retention_local_media_lifetime|to_json }}
+{% endif %}
+{% if matrix_synapse_media_retention_remote_media_lifetime %}
+  remote_media_lifetime: {{ matrix_synapse_media_retention_remote_media_lifetime|to_json }}
+{% endif %}
 
 # Maximum number of pixels that will be thumbnailed
 #
@@ -1248,7 +1258,7 @@ turn_uris: {{ matrix_synapse_turn_uris|to_json }}
 
 # The shared secret used to compute passwords for the TURN server
 #
-turn_shared_secret: {{ matrix_synapse_turn_shared_secret|string|to_json }}
+turn_shared_secret: {{ matrix_synapse_turn_shared_secret | string|to_json }}
 
 # The Username and password if the TURN server needs them and
 # does not use a token
@@ -1385,7 +1395,7 @@ registration_requires_token: {{ matrix_synapse_registration_requires_token|to_js
 # If set, allows registration of standard or admin accounts by anyone who
 # has the shared secret, even if registration is otherwise disabled.
 #
-registration_shared_secret: {{ matrix_synapse_registration_shared_secret|string|to_json }}
+registration_shared_secret: {{ matrix_synapse_registration_shared_secret | string|to_json }}
 
 # Set the number of bcrypt rounds used to generate password hash.
 # Larger numbers increase the work factor needed to generate the hash.
@@ -1409,13 +1419,9 @@ allow_guest_access: {{ matrix_synapse_allow_guest_access|to_json }}
 #
 #default_identity_server: https://matrix.org
 
-# Handle threepid (email/phone etc) registration and password resets through a set of
+# Handle threepid (phone etc) registration and password resets through a set of
 # *trusted* identity servers. Note that this allows the configured identity server to
 # reset passwords for accounts!
-#
-# Be aware that if `email` is not set, and SMTP options have not been
-# configured in the email config block, registration and user password resets via
-# email will be globally disabled.
 #
 # Additionally, if `msisdn` is not set, registration and password resets via msisdn
 # will be disabled regardless, and users will not be able to associate an msisdn
@@ -1431,7 +1437,6 @@ allow_guest_access: {{ matrix_synapse_allow_guest_access|to_json }}
 # https://matrix.org/docs/spec/identity_service/latest
 #
 account_threepid_delegates:
-    email: {{ matrix_synapse_account_threepid_delegates_email|to_json }}
     msisdn: {{ matrix_synapse_account_threepid_delegates_msisdn|to_json }}
 
 # Whether users are allowed to change their displayname after it has
@@ -1579,11 +1584,11 @@ metrics_flags:
     #
     #known_servers: true
 
-# Whether or not to report anonymized homeserver usage statistics.
+# Whether or not to report homeserver usage statistics.
 #
 report_stats: {{ matrix_synapse_report_stats|to_json }}
 
-# The endpoint to report the anonymized homeserver usage statistics to.
+# The endpoint to report homeserver usage statistics to.
 # Defaults to https://matrix.org/report-usage-stats/push
 #
 #report_stats_endpoint: https://example.com/report-usage-stats/push
@@ -1637,7 +1642,7 @@ room_prejoin_state:
 
 # A list of application service config files to use
 #
-app_service_config_files: {{ matrix_synapse_app_service_config_files|to_json }}
+app_service_config_files: {{ matrix_synapse_app_service_config_files_final|to_json }}
 
 # Uncomment to enable tracking of application service IP addresses. Implicitly
 # enables MAU tracking for application service users.
@@ -1649,13 +1654,13 @@ app_service_config_files: {{ matrix_synapse_app_service_config_files|to_json }}
 # the registration_shared_secret is used, if one is given; otherwise,
 # a secret key is derived from the signing key.
 #
-macaroon_secret_key: {{ matrix_synapse_macaroon_secret_key|string|to_json }}
+macaroon_secret_key: {{ matrix_synapse_macaroon_secret_key | string|to_json }}
 
 # a secret which is used to calculate HMACs for form values, to stop
 # falsification of values. Must be specified for the User Consent
 # forms to work.
 #
-form_secret: {{ matrix_synapse_form_secret|string|to_json }}
+form_secret: {{ matrix_synapse_form_secret | string|to_json }}
 
 ## Signing Keys ##
 
@@ -2255,7 +2260,7 @@ password_config:
    # Uncomment and change to a secret random string for extra security.
    # DO NOT CHANGE THIS AFTER INITIAL SETUP!
    #
-   pepper: {{ matrix_synapse_password_config_pepper|string|to_json }}
+   pepper: {{ matrix_synapse_password_config_pepper | string|to_json }}
 
    # Define and enforce a password policy. Each parameter is optional.
    # This is an implementation of MSC2000.
@@ -2322,7 +2327,7 @@ email:
   # The hostname of the outgoing SMTP server to use. Defaults to 'localhost'.
   #
   #smtp_host: mail.server
-  smtp_host: {{ matrix_synapse_email_smtp_host|string|to_json }}
+  smtp_host: {{ matrix_synapse_email_smtp_host | string|to_json }}
 
   # The port on the mail server for outgoing SMTP. Defaults to 25.
   #
@@ -2332,8 +2337,8 @@ email:
   # Username/password for authentication to the SMTP server. By default, no
   # authentication is attempted.
   {% if matrix_synapse_email_smtp_user %}
-  smtp_user: {{ matrix_synapse_email_smtp_user|string|to_json }}
-  smtp_pass: {{ matrix_synapse_email_smtp_pass|string|to_json }}
+  smtp_user: {{ matrix_synapse_email_smtp_user | string|to_json }}
+  smtp_pass: {{ matrix_synapse_email_smtp_pass | string|to_json }}
   {% endif %}
 
   # Uncomment the following to require TLS transport security for SMTP.
@@ -2363,7 +2368,7 @@ email:
   # trailing 's'.
   #
   #notif_from: "Your Friendly %(app)s homeserver <noreply@example.com>"
-  notif_from: {{ matrix_synapse_email_notif_from|string|to_json }}
+  notif_from: {{ matrix_synapse_email_notif_from | string|to_json }}
 
   # app_name defines the default value for '%(app)s' in notif_from and email
   # subjects. It defaults to 'Matrix'.
@@ -2390,7 +2395,7 @@ email:
   # supported for backwards-compatibility but is now deprecated.)
   #
   #client_base_url: "http://localhost/riot"
-  client_base_url: {{ matrix_synapse_email_client_base_url|string|to_json }}
+  client_base_url: {{ matrix_synapse_email_client_base_url | string|to_json }}
 
   # Configure the time that a validation email will expire after sending.
   # Defaults to 1h.
@@ -2401,7 +2406,7 @@ email:
   # to the identity server as the org.matrix.web_client_location key. Defaults
   # to unset, giving no guidance to the identity server.
   #
-  invite_client_location: {{ matrix_synapse_email_invite_client_location|string|to_json }}
+  invite_client_location: {{ matrix_synapse_email_invite_client_location | string|to_json }}
 
   # Subjects to use when sending emails from Synapse.
   #
@@ -2502,7 +2507,7 @@ password_providers:
 {% if matrix_synapse_ext_password_provider_rest_auth_enabled %}
   - module: "rest_auth_provider.RestAuthProvider"
     config:
-      endpoint: {{ matrix_synapse_ext_password_provider_rest_auth_endpoint|string|to_json }}
+      endpoint: {{ matrix_synapse_ext_password_provider_rest_auth_endpoint | string|to_json }}
       policy:
         registration:
           username:
@@ -2517,20 +2522,20 @@ password_providers:
   - module: "ldap_auth_provider.LdapAuthProvider"
     config:
       enabled: true
-      uri: {{ matrix_synapse_ext_password_provider_ldap_uri|string|to_json }}
+      uri: {{ matrix_synapse_ext_password_provider_ldap_uri | string|to_json }}
       start_tls: {{ matrix_synapse_ext_password_provider_ldap_start_tls|to_json }}
-      base: {{ matrix_synapse_ext_password_provider_ldap_base|string|to_json }}
+      base: {{ matrix_synapse_ext_password_provider_ldap_base | string|to_json }}
       active_directory: {{ matrix_synapse_ext_password_provider_ldap_active_directory|to_json }}
-      default_domain: {{ matrix_synapse_ext_password_provider_ldap_default_domain|string|to_json }}
+      default_domain: {{ matrix_synapse_ext_password_provider_ldap_default_domain | string|to_json }}
       attributes:
-        uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid|string|to_json }}
-        mail: {{ matrix_synapse_ext_password_provider_ldap_attributes_mail|string|to_json }}
-        name: {{ matrix_synapse_ext_password_provider_ldap_attributes_name|string|to_json }}
+        uid: {{ matrix_synapse_ext_password_provider_ldap_attributes_uid | string|to_json }}
+        mail: {{ matrix_synapse_ext_password_provider_ldap_attributes_mail | string|to_json }}
+        name: {{ matrix_synapse_ext_password_provider_ldap_attributes_name | string|to_json }}
 {% if matrix_synapse_ext_password_provider_ldap_bind_dn %}
-      bind_dn: {{ matrix_synapse_ext_password_provider_ldap_bind_dn|string|to_json }}
-      bind_password: {{ matrix_synapse_ext_password_provider_ldap_bind_password|string|to_json }}
+      bind_dn: {{ matrix_synapse_ext_password_provider_ldap_bind_dn | string|to_json }}
+      bind_password: {{ matrix_synapse_ext_password_provider_ldap_bind_password | string|to_json }}
 {% endif %}
-      filter: {{ matrix_synapse_ext_password_provider_ldap_filter|string|to_json }}
+      filter: {{ matrix_synapse_ext_password_provider_ldap_filter | string|to_json }}
 {% endif %}
 {% endif %}
 
@@ -2598,16 +2603,6 @@ spam_checker: {{ matrix_synapse_spam_checker|to_json }}
 # will also not affect rooms created by other servers.
 #
 encryption_enabled_by_default_for_room_type: {{ matrix_synapse_encryption_enabled_by_default_for_room_type|to_json }}
-
-
-# Uncomment to allow non-server-admin users to create groups on this server
-#
-enable_group_creation: {{ matrix_synapse_enable_group_creation|to_json }}
-
-# If enabled, non server admins can only create groups with local parts
-# starting with this prefix
-#
-#group_creation_prefix: "unofficial_"
 
 
 

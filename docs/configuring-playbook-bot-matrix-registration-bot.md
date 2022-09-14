@@ -26,14 +26,7 @@ Choose a strong password for the bot. You can generate a good password with a co
 
 ## Obtaining an admin access token
 
-In order to use the bot you need to add an admin user's access token token to the configuration. As you created an admin user for the
-bot, it is recommended to obtain an access token by logging into Element/Schildichat with the bot account
-(using the password you set) and navigate to `Settings->Help&About` and scroll to the bottom.
-You can expand "Access token" to copy it.
-
-![Obatining an admin access token with Element](assets/obtain_admin_access_token_element.png)
-
-**IMPORTANT**: once you copy the token, just close the Matrix client window/tab. Do not "log out", as that would invalidate the token.
+In order to use the bot you need to add an admin user's access token token to the configuration. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 ## Adjusting the playbook configuration
 
@@ -63,7 +56,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To use the bot, create a **non-encrypted** room and invite `@bot.matrix-registration-bot:DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+To use the bot, create a **non-encrypted** room and invite `@bot.matrix-registration-bot:DOMAIN` (where `DOMAIN` is your base domain, not the `matrix.` domain).
 
 In this room send `help` and the bot will reply with all options.
 

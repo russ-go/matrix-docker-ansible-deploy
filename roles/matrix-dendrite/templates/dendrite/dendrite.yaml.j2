@@ -133,11 +133,6 @@ app_service_api:
   internal_api:
     listen: http://0.0.0.0:7777
     connect: http://appservice_api:7777
-  database:
-    connection_string: {{ matrix_dendrite_database_str }}/{{ matrix_dendrite_appservice_database }}?sslmode=disable
-    max_open_conns: 10
-    max_idle_conns: 2
-    conn_max_lifetime: -1
 
   # Disable the validation of TLS certificates of appservices. This is
   # not recommended in production since it may allow appservice traffic
@@ -145,7 +140,7 @@ app_service_api:
   disable_tls_validation: {{ matrix_dendrite_disable_tls_validation|to_json }}
 
   # Appservice configuration files to load into this homeserver.
-  config_files: {{ matrix_dendrite_app_service_config_files|to_json }}
+  config_files: {{ matrix_dendrite_app_service_config_files_final|to_json }}
 
 # Configuration for the Client API.
 client_api:
@@ -165,7 +160,7 @@ client_api:
 
   # If set, allows registration by anyone who knows the shared secret, regardless of
   # whether registration is otherwise disabled.
-  registration_shared_secret: {{ matrix_dendrite_registration_shared_secret|string|to_json }}
+  registration_shared_secret: {{ matrix_dendrite_registration_shared_secret | string|to_json }}
 
   # Whether to require reCAPTCHA for registration.
   enable_registration_captcha: {{ matrix_dendrite_enable_registration_captcha|to_json }}
@@ -174,7 +169,7 @@ client_api:
   recaptcha_public_key: {{ matrix_dendrite_recaptcha_public_key|to_json }}
   recaptcha_private_key: {{ matrix_dendrite_recaptcha_private_key|to_json }}
   recaptcha_bypass_secret: ""
-  recaptcha_siteverify_api: ""
+  recaptcha_siteverify_api: {{ matrix_dendrite_recaptcha_siteverify_api|to_json }}
 
   # TURN server information that this homeserver should send to clients.
   turn:
