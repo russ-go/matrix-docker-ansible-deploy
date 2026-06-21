@@ -38,11 +38,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_client_schildichat_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_client_schildichat_docker_image }}
+			{{ matrix_client_schildichat_container_image }}
 
+{% if matrix_client_schildichat_container_network != 'host' %}
 {% for network in matrix_client_schildichat_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-client-schildichat
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-client-schildichat
 

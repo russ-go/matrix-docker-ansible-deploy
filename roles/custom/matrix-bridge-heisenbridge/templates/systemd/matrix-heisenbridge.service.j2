@@ -31,7 +31,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_heisenbridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_heisenbridge_docker_image }} \
+			{{ matrix_heisenbridge_container_image }} \
 			{% if matrix_heisenbridge_identd_enabled %}
 			--identd \
 			--identd-port 13113 \
@@ -44,9 +44,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--listen-port 9898 \
 			{{ matrix_heisenbridge_homeserver_url }}
 
+{% if matrix_heisenbridge_container_network != 'host' %}
 {% for network in matrix_heisenbridge_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-heisenbridge
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-heisenbridge
 

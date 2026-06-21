@@ -21,7 +21,7 @@ matrix_element_call_enabled: false
 matrix_rtc_enabled: "{{ matrix_element_call_enabled }}"
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/element-call
-matrix_element_call_version: v0.16.3
+matrix_element_call_version: v0.20.1
 
 matrix_element_call_scheme: https
 
@@ -39,7 +39,6 @@ matrix_element_call_container_image_registry_prefix: "{{ matrix_element_call_con
 matrix_element_call_container_image_registry_prefix_upstream: "{{ matrix_element_call_container_image_registry_prefix_upstream_default }}"
 matrix_element_call_container_image_registry_prefix_upstream_default: ghcr.io/
 matrix_element_call_container_image_tag: "{{ matrix_element_call_version }}"
-matrix_element_call_container_image_force_pull: "{{ matrix_element_call_container_image.endswith(':latest') }}"
 
 matrix_element_call_container_network: matrix-element-call
 
@@ -153,3 +152,13 @@ matrix_element_call_config_default_server_config_m_homeserver_server_name: "{{ m
 
 # Controls the livekit/livekit_service_url property in the config.json file.
 matrix_element_call_config_livekit_livekit_service_url: ""
+
+# matrix_element_call_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_element_call_restart_necessary: false

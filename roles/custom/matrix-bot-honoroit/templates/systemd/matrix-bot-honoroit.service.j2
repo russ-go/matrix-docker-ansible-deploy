@@ -30,11 +30,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_bot_honoroit_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_bot_honoroit_docker_image }}
+			{{ matrix_bot_honoroit_container_image }}
 
+{% if matrix_bot_honoroit_container_network != 'host' %}
 {% for network in matrix_bot_honoroit_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-honoroit
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-honoroit
 

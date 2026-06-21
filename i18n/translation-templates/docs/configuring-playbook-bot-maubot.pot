@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# Copyright (C) 2018-2026, Slavi Pantaleev, Aine Etke, MDAD community members
 # This file is distributed under the same license as the matrix-docker-ansible-deploy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-06 23:09+0900\n"
+"POT-Creation-Date: 2026-05-19 07:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,7 +138,7 @@ msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x f
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:106
-msgid "If you change the bot password (`matrix_bot_maubot_initial_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_maubot_initial_password` to let the bot know its new password."
+msgid "If you change the bot password (`matrix_bot_maubot_initial_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [Ketesa](configuring-playbook-ketesa.md) to change it, and then update `matrix_bot_maubot_initial_password` to let the bot know its new password."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:108
@@ -177,8 +177,8 @@ msgstr ""
 msgid "Alternatively, you can refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). Be aware that you'd better use the **Obtain an access token via curl** method (not **Obtain an access token via Element Web**) as the latter will causes issues to your bot in encrypted rooms. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-maubot.md:123
-msgid "[!WARNING] Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
+#: ../../../docs/configuring-playbook-bot-maubot.md:124
+msgid "Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:126

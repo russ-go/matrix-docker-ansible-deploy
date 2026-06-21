@@ -35,23 +35,21 @@ matrix_appservice_kakaotalk_container_image_self_build_repo: "https://src.miscwo
 matrix_appservice_kakaotalk_container_image_self_build_repo_version: "{{ 'master' if matrix_appservice_kakaotalk_version == 'latest' else matrix_appservice_kakaotalk_version }}"
 
 matrix_appservice_kakaotalk_node_version: "{{ matrix_appservice_kakaotalk_version }}"
-matrix_appservice_kakaotalk_node_docker_image: "{{ matrix_appservice_kakaotalk_node_docker_image_registry_prefix }}fair/matrix-appservice-kakaotalk-node:{{ matrix_appservice_kakaotalk_node_version }}"
-matrix_appservice_kakaotalk_node_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream }}"
-matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default }}"
-matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default: ""
-matrix_appservice_kakaotalk_node_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_node_docker_image.endswith(':latest') }}"
+matrix_appservice_kakaotalk_node_container_image: "{{ matrix_appservice_kakaotalk_node_container_image_registry_prefix }}fair/matrix-appservice-kakaotalk-node:{{ matrix_appservice_kakaotalk_node_version }}"
+matrix_appservice_kakaotalk_node_container_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream }}"
+matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream_default: ""
 
 matrix_appservice_kakaotalk_version: 86c038fd2ffee5e0aebf65136f085cce7e38b54e
-matrix_appservice_kakaotalk_docker_image: "{{ matrix_appservice_kakaotalk_docker_image_registry_prefix }}fair/matrix-appservice-kakaotalk:{{ matrix_appservice_kakaotalk_version }}"
-matrix_appservice_kakaotalk_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream }}"
-matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default }}"
-matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default: ""
-matrix_appservice_kakaotalk_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_docker_image.endswith(':latest') }}"
+matrix_appservice_kakaotalk_container_image: "{{ matrix_appservice_kakaotalk_container_image_registry_prefix }}fair/matrix-appservice-kakaotalk:{{ matrix_appservice_kakaotalk_version }}"
+matrix_appservice_kakaotalk_container_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_container_image_registry_prefix_upstream }}"
+matrix_appservice_kakaotalk_container_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_container_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_container_image_registry_prefix_upstream_default: ""
 
 matrix_appservice_kakaotalk_base_path: "{{ matrix_base_data_path }}/appservice-kakaotalk"
 matrix_appservice_kakaotalk_config_path: "{{ matrix_appservice_kakaotalk_base_path }}/config"
 matrix_appservice_kakaotalk_data_path: "{{ matrix_appservice_kakaotalk_base_path }}/data"
-matrix_appservice_kakaotalk_docker_src_files_path: "{{ matrix_appservice_kakaotalk_base_path }}/docker-src"
+matrix_appservice_kakaotalk_container_src_files_path: "{{ matrix_appservice_kakaotalk_base_path }}/docker-src"
 
 matrix_appservice_kakaotalk_command_prefix: "!kt"
 
@@ -121,12 +119,10 @@ matrix_appservice_kakaotalk_database_name: 'matrix_appservice_kakaotalk'
 
 matrix_appservice_kakaotalk_database_connection_string: 'postgres://{{ matrix_appservice_kakaotalk_database_username }}:{{ matrix_appservice_kakaotalk_database_password }}@{{ matrix_appservice_kakaotalk_database_hostname }}:{{ matrix_appservice_kakaotalk_database_port }}/{{ matrix_appservice_kakaotalk_database_name }}'
 
-matrix_appservice_kakaotalk_appservice_database: "{{
-	{
-		'sqlite': ('sqlite:///' + matrix_appservice_kakaotalk_sqlite_database_path_in_container),
-		'postgres': matrix_appservice_kakaotalk_database_connection_string,
-	}[matrix_appservice_kakaotalk_database_engine]
-}}"
+matrix_appservice_kakaotalk_appservice_database: "{{ {
+    'sqlite': ('sqlite:///' + matrix_appservice_kakaotalk_sqlite_database_path_in_container),
+    'postgres': matrix_appservice_kakaotalk_database_connection_string,
+}[matrix_appservice_kakaotalk_database_engine] }}"
 
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).
@@ -225,3 +221,13 @@ matrix_appservice_kakaotalk_registration_yaml: |
   rate_limited: false
 
 matrix_appservice_kakaotalk_registration: "{{ matrix_appservice_kakaotalk_registration_yaml | from_yaml }}"
+
+# matrix_appservice_kakaotalk_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_appservice_kakaotalk_restart_necessary: false

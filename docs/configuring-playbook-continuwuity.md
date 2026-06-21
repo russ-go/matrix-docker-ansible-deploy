@@ -13,7 +13,7 @@ See the project's [documentation](https://continuwuity.org) to learn what it doe
 
 By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
 
-💡 **Note**: continuwuity is a fork of [conduwuit](./configuring-playbook-conduwuit.md), which the playbook also supports.
+💡 **Note**: continuwuity is a fork of [conduwuit](./configuring-playbook-conduwuit.md), which the playbook has supported.
 
 > [!WARNING]
 > - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Continuwuity). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
@@ -46,6 +46,13 @@ Take a look at:
 
 There are various Ansible variables that control settings in the `continuwuity.toml` file.
 
+💡 By default, the playbook wires Continuwuity into a few playbook-wide settings:
+
+- if `exim_relay_enabled: true` (the default), Continuwuity SMTP is automatically enabled and pointed at the [local Exim relay](configuring-playbook-email.md) service
+- `matrix_continuwuity_config_well_known_client` is automatically set to the public homeserver URL in the usual SSL-enabled setup, which helps email verification and password-reset links work in delegated-domain setups
+
+You can override any of these defaults in your `vars.yml` file if you want Continuwuity to use a different SMTP server or a different well-known client URL.
+
 If a specific setting you'd like to change does not have a dedicated Ansible variable, you can either submit a PR to us to add it, or you can [override the setting using an environment variable](https://continuwuity.org/configuration#environment-variables) using `matrix_continuwuity_environment_variables_extension`. For example:
 
 ```yaml
@@ -58,9 +65,14 @@ matrix_continuwuity_environment_variables_extension: |
 
 Unlike other homeserver implementations (like Synapse and Dendrite), continuwuity does not support creating users via the command line or via the playbook.
 
-If you followed the instructions above (see [Adjusting the playbook configuration](#adjusting-the-playbook-configuration)), you should have registration enabled and protected by a registration token.
+On first startup, Continuwuity creates a special one-time-use registration token and logs it to the server's console. To access this, you will need to SSH into the server and run the following command:
 
-This should allow you to create the first user account via any client (like [Element Web](./configuring-playbook-client-element-web.md)) which supports creating users.
+```sh
+# Adjust the duration if necessary or remove the whole --since argument
+journalctl -u matrix-continuwuity.service --since="10 minutes ago"
+```
+
+Find the token, highlight it, and copy it (ctrl+shift+C). This token should allow you to create the first user account via any client (like [Element Web](./configuring-playbook-client-element-web.md)) which supports creating users.
 
 The **first user account that you create will be marked as an admin** and **will be automatically invited to an admin room**.
 

@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# Copyright (C) 2018-2026, Slavi Pantaleev, Aine Etke, MDAD community members
 # This file is distributed under the same license as the matrix-docker-ansible-deploy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-06 23:09+0900\n"
+"POT-Creation-Date: 2026-05-19 07:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgid "See the project's [documentation](https://github.com/element-hq/element-a
 msgstr ""
 
 #: ../../../docs/configuring-playbook-element-admin.md:16
-msgid "💡 **Note**: This project is still very young and doesn't have many features. For now, it's recommended to use [Synapse Admin](./configuring-playbook-synapse-admin.md) instead. Deployments that use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) can use Element Admin for user-management (something that Synapse Admin can't do), while continuing to use Synapse Admin for all other purposes."
+msgid "💡 **Note**: This project is still very young and doesn't have many features. [Ketesa](./configuring-playbook-ketesa.md) is the fully-featured alternative — it covers all Synapse and MAS Admin APIs, including complete user management, session management, and MAS policy data. Element Admin remains a valid choice if you prefer its interface."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-element-admin.md:18
@@ -92,8 +92,8 @@ msgstr ""
 msgid "Example additional configuration for your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-element-admin.md:53
-msgid "[!WARNING] A `matrix_element_admin_path_prefix` variable is also available and mean to let you configure a path prefix for the Element Admin service, but **Element Admin does not support running under a sub-path yet**."
+#: ../../../docs/configuring-playbook-element-admin.md:54
+msgid "A `matrix_element_admin_path_prefix` variable is also available and mean to let you configure a path prefix for the Element Admin service, but **Element Admin does not support running under a sub-path yet**."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-element-admin.md:56

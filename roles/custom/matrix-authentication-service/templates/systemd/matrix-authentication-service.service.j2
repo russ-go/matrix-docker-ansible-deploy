@@ -28,14 +28,19 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--label-file={{ matrix_authentication_service_config_path }}/labels \
 			--mount type=bind,src={{ matrix_authentication_service_config_path }}/config.yaml,dst=/config.yaml,ro \
 			--mount type=bind,src={{ matrix_authentication_service_data_keys_path }},dst=/keys,ro \
+			{% if matrix_authentication_service_config_database_socket_enabled %}
+			--mount type=bind,src={{ matrix_authentication_service_config_database_socket_path_host }},dst={{ matrix_authentication_service_config_database_socket_path }} \
+			{% endif %}
 			{% for arg in matrix_authentication_service_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_authentication_service_container_image }}
 
+{% if matrix_authentication_service_container_network != 'host' %}
 {% for network in matrix_authentication_service_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-authentication-service
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-authentication-service
 

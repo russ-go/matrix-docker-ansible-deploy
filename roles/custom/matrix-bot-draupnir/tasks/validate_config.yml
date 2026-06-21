@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2023 - 2025 MDAD project contributors
-# SPDX-FileCopyrightText: 2023 - 2025 Catalan Lover <catalanlover@protonmail.com>
+# SPDX-FileCopyrightText: 2023 - 2026 Catalan Lover <catalanlover@protonmail.com>
 # SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -31,6 +31,13 @@
     - {'old': 'matrix_bot_draupnir_container_labels_traefik_entrypoints', 'new': 'matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints'}
     - {'old': 'matrix_bot_draupnir_container_labels_traefik_tls', 'new': 'matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls'}
     - {'old': 'matrix_bot_draupnir_container_labels_traefik_tls_certResolver', 'new': 'matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls_certResolver'}
+    - {'old': 'matrix_bot_draupnir_docker_image', 'new': 'matrix_bot_draupnir_container_image'}
+    - {'old': 'matrix_bot_draupnir_docker_image_force_pull', 'new': 'matrix_bot_draupnir_container_image_force_pull'}
+    - {'old': 'matrix_bot_draupnir_docker_image_registry_prefix', 'new': 'matrix_bot_draupnir_container_image_registry_prefix'}
+    - {'old': 'matrix_bot_draupnir_docker_image_registry_prefix_upstream', 'new': 'matrix_bot_draupnir_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_bot_draupnir_docker_image_registry_prefix_upstream_default', 'new': 'matrix_bot_draupnir_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_bot_draupnir_docker_src_files_path', 'new': 'matrix_bot_draupnir_container_src_files_path'}
+    - {'old': 'matrix_bot_draupnir_container_image_force_pull', 'new': '<removed> (No longer needed due to new docker module doing this natively only if needed.)'}
 
 - name: Fail if required matrix-bot-draupnir variables are undefined
   ansible.builtin.fail:
@@ -38,7 +45,8 @@
   with_items:
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ not matrix_bot_draupnir_pantalaimon_use and not matrix_bot_draupnir_login_native }}"}
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_config_experimentalRustCrypto }}"}
-    - {'name': 'matrix_bot_draupnir_config_managementRoom', when: true}
+    - {'name': 'matrix_bot_draupnir_config_managementRoom', when: "{{ not matrix_bot_draupnir_zero_touch_deploy }}"}
+    - {'name': 'matrix_bot_draupnir_config_initialManager', when: "{{ matrix_bot_draupnir_zero_touch_deploy }}"}
     - {'name': 'matrix_bot_draupnir_container_network', when: true}
     - {'name': 'matrix_bot_draupnir_config_homeserverUrl', when: true}
     - {'name': 'matrix_bot_draupnir_config_rawHomeserverUrl', when: true}
@@ -57,6 +65,8 @@
   with_items:
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_login_native }}"}
+    - {'name': 'matrix_bot_draupnir_config_managementRoom', when: "{{ matrix_bot_draupnir_zero_touch_deploy }}"}
+    - {'name': 'matrix_bot_draupnir_config_initialManager', when: "{{ not matrix_bot_draupnir_zero_touch_deploy }}"}
   when: "item.when | bool and not (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
 
 - name: Fail when matrix_bot_draupnir_config_experimentalRustCrypto is enabled together with matrix_bot_draupnir_pantalaimon_use

@@ -27,7 +27,7 @@ To update your playbook directory and all upstream Ansible roles (defined in the
 - either: `just update`
 - or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
 
-If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
+If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly after updating the playbook: `git pull; rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
 For details about `just` commands, take a look at: [Running `just` commands](just.md).
 
@@ -146,6 +146,7 @@ After completing the installation, you can:
 - or learn how to [maintain your server](faq.md#maintenance)
 - or join some Matrix rooms:
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
+    For tuning guidance on constrained hosts, see [Limit joining heavy rooms on constrained hosts](configuring-playbook-synapse.md#limit-joining-heavy-rooms-on-constrained-hosts).
   * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 

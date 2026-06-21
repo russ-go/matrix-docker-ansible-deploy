@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# Copyright (C) 2018-2026, Slavi Pantaleev, Aine Etke, MDAD community members
 # This file is distributed under the same license as the matrix-docker-ansible-deploy package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-06 23:09+0900\n"
+"POT-Creation-Date: 2026-05-19 07:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,18 +81,6 @@ msgid "Storing your data and managing your presence in the [Matrix](http://matri
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "[conduwuit](configuring-playbook-conduwuit.md)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[girlbossceo/conduwuit](https://ghcr.io/girlbossceo/conduwuit)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. conduwuit is a fork of Conduit."
-msgstr ""
-
-#: ../../../docs/container-images.md:0
 msgid "[continuwuity](configuring-playbook-continuwuity.md)"
 msgstr ""
 
@@ -102,6 +90,18 @@ msgstr ""
 
 #: ../../../docs/container-images.md:0
 msgid "Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. continuwuity is a continuation of conduwuit."
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[Tuwunel](configuring-playbook-tuwunel.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[matrix-construct/tuwunel](https://ghcr.io/matrix-construct/tuwunel)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Tuwunel is the official successor to conduwuit."
 msgstr ""
 
 #: ../../../docs/container-images.md:0
@@ -161,6 +161,14 @@ msgid "Simple, elegant and secure web client"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
+msgid "[Sable](configuring-playbook-client-sable.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[7w1/sable](https://ghcr.io/7w1/sable)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
 msgid "[SchildiChat Web](configuring-playbook-client-schildichat-web.md)"
 msgstr ""
 
@@ -172,11 +180,11 @@ msgstr ""
 msgid "Based on Element Web, with a more traditional instant messaging experience"
 msgstr ""
 
-#: ../../../docs/container-images.md:45
+#: ../../../docs/container-images.md:46
 msgid "Server Components"
 msgstr ""
 
-#: ../../../docs/container-images.md:47
+#: ../../../docs/container-images.md:48
 msgid "Services that run on the server to make the various parts of your installation work."
 msgstr ""
 
@@ -238,18 +246,6 @@ msgstr ""
 
 #: ../../../docs/container-images.md:0
 msgid "Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[ma1sd](configuring-playbook-ma1sd.md)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "Matrix Identity Server"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
@@ -337,18 +333,6 @@ msgid "Proxy that handles Matrix registration requests and forwards them to LDAP
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "[matrix-registration](configuring-playbook-matrix-registration.md)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "Simple python application to have a token based Matrix registration"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
 msgid "[Matrix User Verification Service](configuring-playbook-user-verification-service.md)"
 msgstr ""
 
@@ -368,11 +352,11 @@ msgstr ""
 msgid "Spam checker module"
 msgstr ""
 
-#: ../../../docs/container-images.md:75
+#: ../../../docs/container-images.md:74
 msgid "File Storage"
 msgstr ""
 
-#: ../../../docs/container-images.md:77
+#: ../../../docs/container-images.md:76
 msgid "Use alternative file storage to the default `media_store` folder."
 msgstr ""
 
@@ -404,11 +388,11 @@ msgstr ""
 msgid "Highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification."
 msgstr ""
 
-#: ../../../docs/container-images.md:85
+#: ../../../docs/container-images.md:84
 msgid "Bridges"
 msgstr ""
 
-#: ../../../docs/container-images.md:87
+#: ../../../docs/container-images.md:86
 msgid "Bridges can be used to connect your Matrix installation with third-party communication networks."
 msgstr ""
 
@@ -593,14 +577,6 @@ msgid "Bridge to [Discord](https://discordapp.com/)"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "[matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[matrixdotorg/matrix-appservice-slack](https://hub.docker.com/r/matrixdotorg/matrix-appservice-slack)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
 msgid "[matrix-hookshot](configuring-playbook-bridge-hookshot.md)"
 msgstr ""
 
@@ -696,11 +672,11 @@ msgstr ""
 msgid "Email to Matrix bridge"
 msgstr ""
 
-#: ../../../docs/container-images.md:116
+#: ../../../docs/container-images.md:114
 msgid "Bots"
 msgstr ""
 
-#: ../../../docs/container-images.md:118
+#: ../../../docs/container-images.md:116
 msgid "Bots provide various additional functionality to your installation."
 msgstr ""
 
@@ -800,11 +776,11 @@ msgstr ""
 msgid "Web forms (HTTP POST) to Matrix"
 msgstr ""
 
-#: ../../../docs/container-images.md:131
+#: ../../../docs/container-images.md:129
 msgid "Administration"
 msgstr ""
 
-#: ../../../docs/container-images.md:133
+#: ../../../docs/container-images.md:131
 msgid "Services that help you in administrating and monitoring your Matrix installation."
 msgstr ""
 
@@ -833,15 +809,15 @@ msgid "OAuth 2.0 and OpenID Provider server"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "[synapse-admin](configuring-playbook-synapse-admin.md)"
+msgid "[Ketesa](configuring-playbook-ketesa.md)"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "[etke.cc/synapse-admin](https://ghcr.io/etkecc/synapse-admin)"
+msgid "[etkecc/ketesa](https://ghcr.io/etkecc/ketesa)"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "Web UI tool for administrating users and rooms on your Matrix server"
+msgid "Fully-featured web UI for administrating your Matrix homeserver — users, rooms, media, sessions, and more"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
@@ -924,32 +900,12 @@ msgstr ""
 msgid "Export the usage statistics of a Synapse homeserver to be scraped by Prometheus."
 msgstr ""
 
-#: ../../../docs/container-images.md:149
+#: ../../../docs/container-images.md:147
 msgid "Misc"
 msgstr ""
 
-#: ../../../docs/container-images.md:151
+#: ../../../docs/container-images.md:149
 msgid "Various services that don't fit any other categories."
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[sliding-sync](configuring-playbook-sliding-sync-proxy.md)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "[synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md)"
-msgstr ""
-
-#: ../../../docs/container-images.md:0
-msgid "Synapse module to automatically accept invites"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
@@ -1088,24 +1044,24 @@ msgstr ""
 msgid "A native Matrix video conferencing application"
 msgstr ""
 
-#: ../../../docs/container-images.md:171
+#: ../../../docs/container-images.md:167
 msgid "Container images of deprecated / unmaintained services"
 msgstr ""
 
-#: ../../../docs/container-images.md:173
+#: ../../../docs/container-images.md:169
 msgid "The list of the deprecated or unmaintained services is available [here](configuring-playbook.md#deprecated--unmaintained--removed-services)."
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "[matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md)"
+msgid "[conduwuit](configuring-playbook-conduwuit.md)"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "[turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks)"
+msgid "[girlbossceo/conduwuit](https://ghcr.io/girlbossceo/conduwuit)"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
-msgid "Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.)"
+msgid "Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. conduwuit was a fork of Conduit."
 msgstr ""
 
 #: ../../../docs/container-images.md:0
@@ -1145,6 +1101,38 @@ msgid "Multi functional bot written in Go"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
+msgid "[ma1sd](configuring-playbook-ma1sd.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "Matrix Identity Server"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[matrixdotorg/matrix-appservice-slack](https://hub.docker.com/r/matrixdotorg/matrix-appservice-slack)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
 msgid "[matrix-chatgpt-bot](configuring-playbook-bot-chatgpt.md)"
 msgstr ""
 
@@ -1154,6 +1142,18 @@ msgstr ""
 
 #: ../../../docs/container-images.md:0
 msgid "Accessing ChatGPT via your favourite Matrix client"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[matrix-registration](configuring-playbook-matrix-registration.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "Simple python application to have a token based Matrix registration"
 msgstr ""
 
 #: ../../../docs/container-images.md:0
@@ -1222,4 +1222,24 @@ msgstr ""
 
 #: ../../../docs/container-images.md:0
 msgid "Bridge for Twitter-DMs ([Twitter](https://twitter.com/))"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[sliding-sync](configuring-playbook-sliding-sync-proxy.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "[synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md)"
+msgstr ""
+
+#: ../../../docs/container-images.md:0
+msgid "Synapse module to automatically accept invites"
 msgstr ""
